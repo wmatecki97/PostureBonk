@@ -4,8 +4,6 @@ from tensorflow.keras.models import load_model
 import cv2
 import tkinter as tk
 import overlay
-import threading
-import time
 
 isDisplayBlocked=False
 
@@ -45,13 +43,15 @@ def calculate_if_show_overlay():
         predictions = model.predict(batch)
 
         predicted_class = np.argmax(predictions, axis=1)[0]
+        
+        print('good probability:'+str(predictions[0][0])+'%, '+str(predictions[0][1])+'%')
 
-        if predicted_class == 0:
-            print("Class: class_0")
+        if predictions[0][1] < 0.7:
             return False
         else:
-            print("Class: class_1")
             return True
+        
+        
 
 
 overlay.run(calculate_if_show_overlay)

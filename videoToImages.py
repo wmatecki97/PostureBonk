@@ -23,7 +23,7 @@ def video_to_images(input_video_path, output_image_path):
             break
         
         # Save the frame as an image
-        image_path = f"{output_image_path}/frame_{random.random()}.jpg"
+        image_path = f"{output_image_path}/frame_{os.path.basename(input_video_path)+str(frame_count)}.jpg"
         cv2.imwrite(image_path, frame)
         
         # Increment frame count
