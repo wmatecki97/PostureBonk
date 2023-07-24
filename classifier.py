@@ -16,7 +16,7 @@ input_shape = (90, 160, 3)
 num_classes = 2
 learning_rate = 0.001
 batch_size = 32
-epochs = 5
+epochs = 2
 
 model = build_image_classifier(input_shape, num_classes)
 optimizer = Adam(learning_rate=learning_rate)
