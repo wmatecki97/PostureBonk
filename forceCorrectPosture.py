@@ -5,9 +5,11 @@ import cv2
 import tkinter as tk
 import overlay
 import threading
+import time
+
+isDisplayBlocked=False
 
 print('loading model')
-# Load the saved model
 model = load_model('image_classifier_model.h5')
 print('model loaded')
 
@@ -29,37 +31,30 @@ def preprocess_frame(frame):
     return preprocessed_frame
 
 print('initializing camera')
-# Initialize the camera
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Use 0 for the default camera or specify the camera index accordingly
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) 
 print('camera initialized')
 
-while True:
+def calculate_if_show_overlay():
     frame = get_live_frame()
 
     if frame is not None:
         preprocessed_frame = preprocess_frame(frame)
 
-        # Convert the preprocessed frame to a batch of size 1 (as the model expects a batch)
         batch = np.expand_dims(preprocessed_frame, axis=0)
 
-        # Make predictions using the loaded model
         predictions = model.predict(batch)
 
-        # Assuming binary classification, predictions will be an array with two values
-        # where the first value corresponds to class_0 and the second value corresponds to class_1.
-        # The class with the highest probability is the predicted class.
         predicted_class = np.argmax(predictions, axis=1)[0]
 
-        # Log the classification result to the console
         if predicted_class == 0:
             print("Class: class_0")
+            return False
         else:
             print("Class: class_1")
-            popup = overlay.create_overlay()
-            processing_thread = threading.Thread(target=overlay.run)
-            processing_thread.daemon = True  # Set the thread as daemon so it terminates when the main thread ends
-            processing_thread.start()
+            return True
 
+
+overlay.run(calculate_if_show_overlay)
 
 cap.release()
 cv2.destroyAllWindows()
