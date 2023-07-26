@@ -8,6 +8,7 @@ def build_image_classifier(input_shape, num_classes):
     model = Sequential()
     model.add(Flatten(input_shape=input_shape))
     model.add(Dense(128, activation='relu'))
+    model.add(Dense(64, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))  # Changed to 'softmax' activation
 
     return model
