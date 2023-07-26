@@ -2,48 +2,94 @@ import win32gui
 import win32con
 import tkinter as tk
 import threading
+import datetime
+from shared_config import SharedConfig 
+import tkinter as tk
+from PIL import Image, ImageTk
+from screeninfo import get_monitors
 
-overlay = tk.Tk()
+class ScreenOverlayRunner:
+    def __init__(self, shared_config:SharedConfig, show_overlay_function):
+        self.config = shared_config
+        self.overlay:tk.Tk = None
+        self.disabledTimer = 0
+        self.show_overlay_function = show_overlay_function
 
-def create_overlay(show_overlay_function):
-    global overlay
-    overlay = tk.Tk()
-    overlay.attributes('-fullscreen', True)
-    overlay.attributes('-alpha', 0.5)#overlay transparency
-    hwnd = int(overlay.winfo_id())
-    win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE) | win32con.WS_EX_LAYERED | win32con.WS_EX_TOPMOST)
-    win32gui.SetLayeredWindowAttributes(hwnd, 0, int(255 * 0.5), win32con.LWA_ALPHA)
-    print('lifting')
-    overlay.lift()
-    overlay.focus_force()
-    overlay.grab_set()
-    overlay.grab_release()
-    overlay.attributes("-topmost", True)
+    def disable_for_15_min(self):
+        self.disabledTimer= 15 * 60
 
-    label = tk.Label(overlay, text="Straighten up, ugly bastard!", font=("Arial", 24), bg="white", fg="black")
-    label.place(relx=0.5, rely=0.5, anchor=tk.CENTER) 
+    def disable_for_today(self):
+        def time_till_midnight():
+            now = datetime.datetime.now()
+            midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            midnight = midnight + datetime.timedelta(days=1)
+            time_remaining = midnight - now
+            return time_remaining.total_seconds()
 
-    def updateStatus(show_overlay_function):
-        global overlay
-        show = show_overlay_function()
-        if not show:
-            overlay_to_destroy = overlay
-            threading.Timer(1, updateStatus, [show_overlay_function]).start()
-            if overlay_to_destroy is not None:
-                overlay_to_destroy.destroy()
-                overlay = None
-        elif overlay is None:
-            overlay = run(show_overlay_function)
-        else:
-            overlay.after(300, updateStatus, show_overlay_function)
+        self.disabledTimer = time_till_midnight()
 
-    overlay.after(300, updateStatus, show_overlay_function)
-    return overlay
+    def create_overlay(self):
+        monitors = get_monitors()
+        overlay = tk.Tk()
+        monitor = monitors[self.config.monitor]
+        overlay.geometry(f"{monitor.width}x{monitor.height}+{monitor.x}+0")
 
-def run(show_overlay_function):
-    overlay = create_overlay(show_overlay_function)
-    overlay.mainloop()
+        overlay.attributes('-alpha', 0.8)#overlay transparency
+        hwnd = int(overlay.winfo_id())
+        win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE) | win32con.WS_EX_LAYERED | win32con.WS_EX_TOPMOST)
+        win32gui.SetLayeredWindowAttributes(hwnd, 0, int(255 * 0.5), win32con.LWA_ALPHA)
+        overlay.lift()
+        overlay.focus_force()
+        overlay.grab_set()
+        overlay.grab_release()
+        overlay.attributes("-topmost", True)
 
+        image1 = Image.open("bonk.png")
+        test = ImageTk.PhotoImage(image1)
 
+        bonk_image_label = tk.Label(image=test)
+        bonk_image_label.image = test
 
+        # Position image
+        bonk_image_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER) 
+        
+        label = tk.Label(overlay, text=self.config.alarm_message, font=("Arial", 24), bg="white", fg="black", compound="top")
+        label.place(relx=0.5, rely=0.6, anchor=tk.CENTER) 
+
+        btn_15_min = tk.Button(overlay, text="Disable for 15 min", command=self.disable_for_15_min, font=("Arial", 24),  fg="green", bg="black")
+        btn_15_min.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
+
+        btn_today = tk.Button(overlay, text="Disable for today", command=self.disable_for_today, font=("Arial", 24),  fg="green", bg="black")
+        btn_today.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
+        overlay.after(300, self.updateStatus)
+
+        return overlay
+    
+    def updateStatus(self):
+            show = self.show_overlay_function()
+            if self.disabledTimer > 0:
+                overlay_to_destroy = self.overlay
+                timer_thread = threading.Timer(self.disabledTimer, self.updateStatus)
+                timer_thread.daemon = True
+                timer_thread.start()
+                self.disabledTimer = 0
+                if overlay_to_destroy is not None:
+                    overlay_to_destroy.destroy()
+                    self.overlay = None
+            elif not show:
+                overlay_to_destroy = self.overlay
+                timer_thread = threading.Timer(1, self.updateStatus)
+                timer_thread.daemon = True
+                timer_thread.start()
+                if overlay_to_destroy is not None:
+                    overlay_to_destroy.destroy()
+                    self.overlay = None
+            elif self.overlay is None:
+                self.overlay = self.create_overlay()
+                self.overlay.mainloop()
+            else:
+                self.overlay.after(300, self.updateStatus)
+
+    def run(self):
+        self.updateStatus()
 
