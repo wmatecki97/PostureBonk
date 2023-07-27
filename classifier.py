@@ -15,7 +15,7 @@ def build_image_classifier(input_shape, num_classes):
 
 input_shape = (90, 160, 3)
 num_classes = 2
-learning_rate = 0.001
+learning_rate = 0.0001
 batch_size = 32
 epochs = 2
 

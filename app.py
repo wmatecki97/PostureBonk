@@ -8,6 +8,7 @@ from posture_analyser import PostureAnalyser
 from threading import Thread
 import cv2
 from screeninfo import get_monitors
+import threading
 
 image = Image.open("icon.jpg")
 config = SharedConfig.create_from_file()
@@ -113,6 +114,8 @@ icon = pystray.Icon("Neural", image, menu=pystray.Menu(
 ))
 
 posture_analyser_instance = PostureAnalyser(config)
-posture_analyser_instance.run()
+timer_thread = threading.Thread(target=posture_analyser_instance.run)
+timer_thread.daemon = True
+timer_thread.start()
 
 icon.run()

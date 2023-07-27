@@ -7,6 +7,8 @@ from shared_config import SharedConfig
 import tkinter as tk
 from PIL import Image, ImageTk
 from screeninfo import get_monitors
+import time
+import shelve
 
 class ScreenOverlayRunner:
     def __init__(self, shared_config:SharedConfig, show_overlay_function):
@@ -14,6 +16,9 @@ class ScreenOverlayRunner:
         self.overlay:tk.Tk = None
         self.disabledTimer = 0
         self.show_overlay_function = show_overlay_function
+        self.valid_time=0
+        self.invalid_time=0
+        self.timer = None
 
     def disable_for_15_min(self):
         self.disabledTimer= 15 * 60
@@ -50,11 +55,15 @@ class ScreenOverlayRunner:
         bonk_image_label = tk.Label(image=test)
         bonk_image_label.image = test
 
-        # Position image
+        label = tk.Label(overlay, text= "you were sitting correctly for: "+str("{:.2f}".format(self.valid_time))+" seconds", font=("Arial", 24), bg="white", fg="black", compound="top")
+        label.place(relx=0.5, rely=0.1, anchor=tk.CENTER) 
+
         bonk_image_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER) 
         
         label = tk.Label(overlay, text=self.config.alarm_message, font=("Arial", 24), bg="white", fg="black", compound="top")
         label.place(relx=0.5, rely=0.6, anchor=tk.CENTER) 
+
+        
 
         btn_15_min = tk.Button(overlay, text="Disable for 15 min", command=self.disable_for_15_min, font=("Arial", 24),  fg="green", bg="black")
         btn_15_min.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
@@ -65,8 +74,27 @@ class ScreenOverlayRunner:
 
         return overlay
     
+    def updateTimeStatistics(self, isPostureValid):
+        if self.timer is not None:
+            elapsed = (time.time_ns() - self.timer) / 1e9  # Convert nanoseconds to seconds
+            if isPostureValid:
+                self.valid_time+=elapsed
+            else:
+                self.invalid_time+=elapsed
+
+            if self.valid_time > 60 or self.invalid_time > 60:
+                with shelve.open('data.db') as storage:
+                     storage['valid_time'] = storage['valid_time']+self.valid_time
+                     storage['invalid_time'] = storage['invalid_time']+self.invalid_time
+                     storage.sync()
+
+
+        self.timer = time.time_ns()
+
     def updateStatus(self):
             show = self.show_overlay_function()
+            self.updateTimeStatistics(not show)
+
             if self.disabledTimer > 0:
                 overlay_to_destroy = self.overlay
                 timer_thread = threading.Timer(self.disabledTimer, self.updateStatus)
