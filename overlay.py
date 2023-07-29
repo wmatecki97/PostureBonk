@@ -87,7 +87,8 @@ class ScreenOverlayRunner:
                      storage['valid_time'] = storage['valid_time']+self.valid_time
                      storage['invalid_time'] = storage['invalid_time']+self.invalid_time
                      storage.sync()
-
+                     self.valid_time=0
+                     self.invalid_time=0
 
         self.timer = time.time_ns()
 
