@@ -1,4 +1,8 @@
-trainingData/*
-trainingVideos/*
+*/trainingData/*
+*/trainingVideos/*
 build/*
 dist/*
+*.pyc
+*.bak
+*.dat
+*.dir
