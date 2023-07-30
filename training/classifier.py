@@ -41,4 +41,4 @@ train_generator = train_datagen.flow_from_directory(
 model.fit(train_generator, epochs=epochs)
 
 # Save the model to a file
-model.save(os.path.dirname(os.path.abspath(__file__))+'/../app/image_classifier_model.h5')
+model.save( os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','app','assets','image_classifier_model.h5'))

@@ -8,3 +8,4 @@ dist/*
 *.dir
 *.tfrecords
 *.db
+app.spec
