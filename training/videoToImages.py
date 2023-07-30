@@ -48,13 +48,13 @@ def remove_files_with_copy(folder_path):
 if __name__ == "__main__":
 
    # Folder paths
-    correct_video_folder =os.getcwd()+ "/trainingVideos/correct"
+    correct_video_folder =os.path.dirname(os.path.abspath(__file__))+ "/trainingVideos/correct"
     print(correct_video_folder)
-    invalid_video_folder = os.getcwd()+"/trainingVideos/invalid"
+    invalid_video_folder = os.path.dirname(os.path.abspath(__file__))+"/trainingVideos/invalid"
     
     # Output folders for the respective classes
-    class_0_output_folder = os.getcwd()+"/trainingData/class_0"
-    class_1_output_folder = os.getcwd()+"/trainingData/class_1"
+    class_0_output_folder = os.path.dirname(os.path.abspath(__file__))+"/trainingData/class_0"
+    class_1_output_folder = os.path.dirname(os.path.abspath(__file__))+"/trainingData/class_1"
     
     remove_files_with_copy(class_0_output_folder)
     remove_files_with_copy(class_1_output_folder)

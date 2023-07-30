@@ -9,8 +9,8 @@ from threading import Thread
 import cv2
 from screeninfo import get_monitors
 import threading
-
-image = Image.open("images/icon.jpg")
+import os 
+image = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images', 'icon.jpg'))
 config = SharedConfig.create_from_file()
 
 def exit_app(icon):

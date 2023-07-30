@@ -9,6 +9,7 @@ from PIL import Image, ImageTk
 from screeninfo import get_monitors
 import time
 import shelve
+import os 
 
 class ScreenOverlayRunner:
     def __init__(self, shared_config:SharedConfig, show_overlay_function):
@@ -49,7 +50,7 @@ class ScreenOverlayRunner:
         overlay.grab_release()
         overlay.attributes("-topmost", True)
 
-        image1 = Image.open("images/bonk.png")
+        image1 = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"images","bonk.png"))
         test = ImageTk.PhotoImage(image1)
 
         bonk_image_label = tk.Label(image=test)
@@ -86,7 +87,6 @@ class ScreenOverlayRunner:
                 with shelve.open('data.db') as storage:
                      storage['valid_time'] = storage['valid_time']+self.valid_time
                      storage['invalid_time'] = storage['invalid_time']+self.invalid_time
-                     storage.sync()
                      self.valid_time=0
                      self.invalid_time=0
 
