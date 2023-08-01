@@ -1,6 +1,5 @@
 from PIL import Image
 import pystray
-from tkinter import simpledialog, Tk, Toplevel
 import tkinter as tk
 from shared_config import SharedConfig
 from PIL import Image
@@ -10,8 +9,12 @@ import cv2
 from screeninfo import get_monitors
 import threading
 import os 
+
 image = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'images', 'icon.jpg'))
 config = SharedConfig.create_from_file()
+posture_analyser_instance = PostureAnalyser(config)
+posture_analyser_thread = threading.Thread(target=posture_analyser_instance.run)
+posture_analyser_thread.daemon = True
 
 def exit_app(icon):
     icon.stop()
@@ -54,6 +57,11 @@ def certainty_selected(icon, item):
     config.certainty = int(item.text[:-1])/100
     config.save_to_file()
 
+def delay_selected(icon, item):
+    global config
+    config.alarm_delay = int(item.text[:-1])
+    config.save_to_file()
+
 def get_available_camera_indices():
     index = 0
     arr = []
@@ -92,12 +100,23 @@ else:
     monitor_menu = None
 
 certainty_menu = pystray.Menu(
+    pystray.MenuItem("20%", certainty_selected),
+    pystray.MenuItem("30%", certainty_selected),
+    pystray.MenuItem("40%", certainty_selected),
     pystray.MenuItem("50%", certainty_selected),
     pystray.MenuItem("60%", certainty_selected),
     pystray.MenuItem("70%", certainty_selected),
     pystray.MenuItem("80%", certainty_selected),
     pystray.MenuItem("90%", certainty_selected),
     pystray.MenuItem("95%", certainty_selected),
+)
+
+alarm_delay_menu = pystray.Menu(
+    pystray.MenuItem("1s", delay_selected),
+    pystray.MenuItem("3s", delay_selected),
+    pystray.MenuItem("5s", delay_selected),
+    pystray.MenuItem("10s", delay_selected),
+    pystray.MenuItem("30s", delay_selected),
 )
 
 menu_items = [ item for item in [
@@ -108,15 +127,14 @@ menu_items = [ item for item in [
     pystray.MenuItem("Stop for today min", show_alarm_message_dialog),
     pystray.MenuItem("Change alarm message", show_alarm_message_dialog),
     pystray.MenuItem("Certainty", certainty_menu),
+    pystray.MenuItem("Alarm after", alarm_delay_menu),
     pystray.MenuItem("Exit", exit_app)] if item is not None]
 
 icon = pystray.Icon("Neural", image, menu=pystray.Menu(
 *menu_items
 ))
 
-posture_analyser_instance = PostureAnalyser(config)
-timer_thread = threading.Thread(target=posture_analyser_instance.run)
-timer_thread.daemon = True
-timer_thread.start()
+
+posture_analyser_thread.start()
 
 icon.run()

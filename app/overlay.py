@@ -20,6 +20,7 @@ class ScreenOverlayRunner:
         self.valid_time=0
         self.invalid_time=0
         self.timer = None
+        self.invalid_position_consecutive_checks_seconds = 0
 
     def disable_for_15_min(self):
         self.disabledTimer= 15 * 60
@@ -89,33 +90,47 @@ class ScreenOverlayRunner:
                      self.invalid_time = 0
         self.timer = time.time_ns()
 
+    def wait_and_update_status(self, delay):
+        timer_thread = threading.Timer(delay, self.updateStatus)
+        timer_thread.daemon = True
+        timer_thread.start()
+
     def updateStatus(self):
+            if self.config.stop:
+                return;
+    
             show = self.show_overlay_function()
             self.updateTimeStatistics(not show)
 
+            if show:
+                if(self.invalid_position_consecutive_checks_seconds<self.config.alarm_delay):
+                    self.invalid_position_consecutive_checks_seconds+=self.config.alarm_delay
+                    if self.overlay is None:
+                        self.wait_and_update_status(self.config.alarm_delay)
+                    else:
+                        self.overlay.after(300, self.updateStatus)
+                    return
+                self.invalid_position_consecutive_checks_seconds=0
+
             if self.disabledTimer > 0:
                 overlay_to_destroy = self.overlay
-                timer_thread = threading.Timer(self.disabledTimer, self.updateStatus)
-                timer_thread.daemon = True
-                timer_thread.start()
+                self.wait_and_update_status(self.disabledTimer)
                 self.disabledTimer = 0
                 if overlay_to_destroy is not None:
                     overlay_to_destroy.destroy()
                     self.overlay = None
             elif not show:
                 overlay_to_destroy = self.overlay
-                timer_thread = threading.Timer(1, self.updateStatus)
-                timer_thread.daemon = True
-                timer_thread.start()
+                self.wait_and_update_status(self.config.alarm_delay)
                 if overlay_to_destroy is not None:
                     overlay_to_destroy.destroy()
                     self.overlay = None
-            elif self.overlay is None:
+            elif self.overlay is None :
                 self.overlay = self.create_overlay()
                 self.overlay.mainloop()
             else:
+                self.invalid_position_consecutive_checks_seconds=0
                 self.overlay.after(300, self.updateStatus)
 
     def run(self):
         self.updateStatus()
-

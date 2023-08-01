@@ -3,10 +3,12 @@ import json
 class SharedConfig:
     def __init__(self, certainty=0.8, alarm_message="Straighten up!"):
         self.certainty = certainty
+        self.alarm_delay = 1
         self.alarm_message = alarm_message
         self.file_path = "config.json"
         self.camera = 0
         self.monitor = 0
+        self.stop = False
 
     def create_from_file():
         instance = SharedConfig()

@@ -11,10 +11,11 @@ class PostureAnalyser:
 
     def run(self):
         model = load_model(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'image_classifier_model.h5'))
-        cap = cv2.VideoCapture(self.config.camera, cv2.CAP_DSHOW) 
 
         def get_live_frame():
+            cap = cv2.VideoCapture(self.config.camera, cv2.CAP_DSHOW) 
             ret, frame = cap.read()
+            cap.release()
 
             if ret:
                 return frame
