@@ -33,11 +33,7 @@ if __name__ == '__main__':
     shutil.rmtree(result_directory, ignore_errors=True)
     os.makedirs(result_directory, exist_ok=True)
     data_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'trainingData', 'raw')
-    copy_images_generator = ImageDataGenerator()
-    generator = copy_images_generator.flow_from_directory(data_directory, batch_size=32, class_mode='binary', target_size=[90,160])
     number_of_input_images = sum(len(files) for _, _, files in os.walk(data_directory))
-    save_images_from_generator(generator, number_of_input_images)
-    print(number_of_input_images)
 
     Gen = ImageDataGenerator(
         rotation_range=0,
@@ -53,4 +49,4 @@ if __name__ == '__main__':
 
     for i in range(number_of_copies):
         generator = Gen.flow_from_directory(data_directory, batch_size=32, class_mode='binary', target_size=[90,160])
-        save_images_from_generator( generator, number_of_input_images*number_of_copies)
+        save_images_from_generator( generator, number_of_input_images/2*number_of_copies)

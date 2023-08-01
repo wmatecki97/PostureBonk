@@ -10,7 +10,7 @@ class PostureAnalyser:
         self.config = shared_config
 
     def run(self):
-        model = load_model(os.path.join(os.path.dirname(os.path.abspath(__file__)),'image_classifier_model.h5'))
+        model = load_model(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'image_classifier_model.h5'))
         cap = cv2.VideoCapture(self.config.camera, cv2.CAP_DSHOW) 
 
         def get_live_frame():

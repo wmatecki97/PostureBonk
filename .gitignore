@@ -9,3 +9,10 @@ dist/*
 *.dir
 *.tfrecords
 *.db
+app.spec
+*/training/*.png
+*/training/*.jpg
+*/training/*.jpeg
+*/training/*.tiff
+*/training/*.webp
+*/training/*.avif

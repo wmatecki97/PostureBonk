@@ -50,7 +50,7 @@ class ScreenOverlayRunner:
         overlay.grab_release()
         overlay.attributes("-topmost", True)
 
-        image1 = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"images","bonk.png"))
+        image1 = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"assets","images","bonk.png"))
         test = ImageTk.PhotoImage(image1)
 
         bonk_image_label = tk.Label(image=test)

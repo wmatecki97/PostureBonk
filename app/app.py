@@ -10,13 +10,13 @@ import cv2
 from screeninfo import get_monitors
 import threading
 import os 
-image = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images', 'icon.jpg'))
+image = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'images', 'icon.jpg'))
 config = SharedConfig.create_from_file()
 
 def exit_app(icon):
     icon.stop()
 
-def show_input_dialog(icon, item):
+def show_alarm_message_dialog(icon, item):
     global config 
     class InputDialog(tk.Toplevel):
         def __init__(self, parent, title):
@@ -105,7 +105,8 @@ menu_items = [ item for item in [
     monitor_menu, 
     pystray.MenuItem("Start", exit_app),
     pystray.MenuItem("Stop for 15 min", exit_app),
-    pystray.MenuItem("Stop for today min", show_input_dialog),
+    pystray.MenuItem("Stop for today min", show_alarm_message_dialog),
+    pystray.MenuItem("Change alarm message", show_alarm_message_dialog),
     pystray.MenuItem("Certainty", certainty_menu),
     pystray.MenuItem("Exit", exit_app)] if item is not None]
 

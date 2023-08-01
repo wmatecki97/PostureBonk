@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -18,7 +18,7 @@ input_shape = (90,160, 3)
 num_classes = 2
 learning_rate = 0.0001
 batch_size = 32
-epochs = 5
+epochs = 10
 
 dataset = tf.data.TFRecordDataset('trainingData/data.tfrecords')
 
@@ -28,6 +28,7 @@ optimizer = Adam(learning_rate=learning_rate)
 model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 # Changed loss to 'sparse_categorical_crossentropy' since labels are integers (0 or 1).
 
+model = load_model(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..','app','assets', 'image_classifier_model.h5'))
 
 train_datagen = ImageDataGenerator(rescale=1.0 / 255)
 train_generator = train_datagen.flow_from_directory(
@@ -41,4 +42,4 @@ train_generator = train_datagen.flow_from_directory(
 model.fit(train_generator, epochs=epochs)
 
 # Save the model to a file
-model.save(os.path.dirname(os.path.abspath(__file__))+'/../app/image_classifier_model.h5')
+model.save( os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','app','assets','image_classifier_model.h5'))
