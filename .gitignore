@@ -9,3 +9,9 @@ dist/*
 *.tfrecords
 *.db
 app.spec
+*.png
+*.jpg
+*.jpeg
+*.tiff
+*.webp
+*.avif
