@@ -2,8 +2,26 @@ import cv2
 import random
 import os
 import shutil
+from cvzone.SelfiSegmentationModule import SelfiSegmentation
+
+seg = SelfiSegmentation()
+backgrounds_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backgrounds', 'backgrounds')
+
+def load_backgrounds(backgrounds_directory):
+    background_images = []
+    for filename in os.listdir(backgrounds_directory):
+        if filename.lower().endswith((".jpg", ".jpeg", ".png")):
+            background_path = os.path.join(backgrounds_directory, filename)
+            background_image = cv2.imread(background_path)
+            if background_image is not None:
+                background_image = cv2.resize(background_image, (160, 90))
+                background_images.append(background_image)
+    return background_images
+
+background_images = load_backgrounds(backgrounds_directory)
 
 def video_to_images(input_video_path, output_image_path):
+    global background_images
     # Open the video file
     video_capture = cv2.VideoCapture(input_video_path)
     
@@ -27,7 +45,12 @@ def video_to_images(input_video_path, output_image_path):
         image_path = f"{output_image_path}/frame_{os.path.basename(input_video_path)+str(frame_count)}.jpg"
         if os.path.isfile(image_path):
             break;
-        cv2.imwrite(image_path, frame)
+        
+        background = random.choice(background_images)
+        frame = cv2.resize(frame,(160,90))
+        vid_rmbg = seg.removeBG(frame, background, threshold=0.6)
+
+        cv2.imwrite(image_path, vid_rmbg)
         
         # Increment frame count
         frame_count += 1

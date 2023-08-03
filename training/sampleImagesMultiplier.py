@@ -3,7 +3,7 @@ from keras.preprocessing.image import ImageDataGenerator, save_img
 import uuid
 import shutil
 
-number_of_copies = 2
+number_of_copies = 4
 
 def save_image(image, class_name):
     save_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'trainingData', 'processed', class_name)
