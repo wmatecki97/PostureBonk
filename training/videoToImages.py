@@ -46,9 +46,9 @@ def video_to_images(input_video_path, output_image_path):
         if os.path.isfile(image_path):
             break;
         
-        background = random.choice(background_images)
+        # background = random.choice(background_images)
         frame = cv2.resize(frame,(160,90))
-        vid_rmbg = seg.removeBG(frame, background, threshold=0.6)
+        vid_rmbg = seg.removeBG(frame, threshold=0.6)
 
         cv2.imwrite(image_path, vid_rmbg)
         
@@ -59,6 +59,7 @@ def video_to_images(input_video_path, output_image_path):
     video_capture.release()
 
 def remove_files_with_copy(folder_path):
+        os.makedirs(folder_path, exist_ok=True)
         # Get the list of all files in the folder
         files = os.listdir(folder_path)
 

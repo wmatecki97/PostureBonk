@@ -4,6 +4,9 @@ import cv2
 import overlay as overlay
 import shared_config
 import os 
+from cvzone.SelfiSegmentationModule import SelfiSegmentation
+
+seg = SelfiSegmentation()
 
 class PostureAnalyser:
     def __init__(self, shared_config:shared_config.SharedConfig):
@@ -25,7 +28,7 @@ class PostureAnalyser:
         def preprocess_frame(frame):
             # Resize the frame to match the input shape of the model (90x160 with 3 color channels)
             preprocessed_frame = cv2.resize(frame, (160, 90))
-
+            preprocessed_frame = seg.removeBG(preprocessed_frame, threshold=0.6)
             # Normalize the pixel values to be in the range [0, 1]
             preprocessed_frame = preprocessed_frame.astype('float32') / 255.0
 

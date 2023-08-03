@@ -3,7 +3,7 @@ from keras.preprocessing.image import ImageDataGenerator, save_img
 import uuid
 import shutil
 
-number_of_copies = 4
+number_of_copies = 1
 
 def save_image(image, class_name):
     save_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'trainingData', 'processed', class_name)
@@ -37,8 +37,8 @@ if __name__ == '__main__':
 
     Gen = ImageDataGenerator(
         rotation_range=0,
-        width_shift_range=0.1,
-        height_shift_range=0.3,
+        width_shift_range=0,
+        height_shift_range=0.1,
         zoom_range=0.1,
         fill_mode='nearest',
         horizontal_flip=True,
@@ -47,6 +47,5 @@ if __name__ == '__main__':
         preprocessing_function=None
     )
 
-    for i in range(number_of_copies):
-        generator = Gen.flow_from_directory(data_directory, batch_size=32, class_mode='binary', target_size=[90,160])
-        save_images_from_generator( generator, number_of_input_images/2*number_of_copies)
+    generator = Gen.flow_from_directory(data_directory, batch_size=32, class_mode='binary', target_size=[90,160])
+    save_images_from_generator( generator, number_of_input_images*number_of_copies)
