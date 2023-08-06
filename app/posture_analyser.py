@@ -29,10 +29,11 @@ class PostureAnalyser:
             # Resize the frame to match the input shape of the model (90x160 with 3 color channels)
             preprocessed_frame = cv2.resize(frame, (160, 90))
             preprocessed_frame = seg.removeBG(preprocessed_frame, threshold=0.6)
-            # Normalize the pixel values to be in the range [0, 1]
-            preprocessed_frame = preprocessed_frame.astype('float32') / 255.0
+            preprocessed_frame = cv2.cvtColor(preprocessed_frame, cv2.COLOR_BGR2GRAY)
 
-            return preprocessed_frame
+            modified_img = np.where(preprocessed_frame < 255, 0, 1)
+
+            return modified_img
 
 
         def calculate_if_show_overlay():
