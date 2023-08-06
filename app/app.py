@@ -8,6 +8,11 @@ import cv2
 from screeninfo import get_monitors
 import threading
 import os 
+from db.db import get_statistics_by_num_days
+import tkinter as tk
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.dates as mdates
 
 image = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'images', 'icon.jpg'))
 config = SharedConfig.create_from_file()
@@ -29,6 +34,43 @@ def kill_current_app_and_create_new():
 
 def exit_app(icon):
     icon.stop()
+
+def plot_statistics_chart():
+    num_days = 30
+    stats = get_statistics_by_num_days(num_days)
+
+    valid_times, invalid_times, dates = zip(*stats)
+
+    fig, ax = plt.subplots()
+    ax.plot(dates, valid_times, label='Valid Time')
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%Y'))
+    plt.gca().xaxis.set_major_locator(mdates.DayLocator())
+    ax.plot(dates, invalid_times, label='Invalid Time')
+    ax.set_xlabel('Days')
+    ax.set_ylabel('Total Time (minutes)')
+    ax.set_title('Statistics of the Last 30 Days')
+    ax.legend()
+
+    # Display the chart in the Tkinter window
+    root = tk.Tk()
+    root.title('Statistics Chart')
+    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    # Define a function to properly close the Tkinter window and the matplotlib figure
+    def close_window():
+        plt.close(fig)
+        root.destroy()
+
+    root.protocol("WM_DELETE_WINDOW", close_window)
+    root.mainloop()
+
+def show_statistics_chart_window():
+    t = threading.Thread(target=plot_statistics_chart)
+    t.daemon = True
+    t.start()
+
 
 def show_alarm_message_dialog(icon, item):
     global config 
@@ -53,7 +95,7 @@ def show_alarm_message_dialog(icon, item):
             self.destroy()
 
     root = tk.Tk()  
-    root.withdraw()  # Hide the root window
+    root.withdraw()
 
     input_dialog = InputDialog(root, "User Input")
     root.wait_window(input_dialog) 
@@ -61,7 +103,7 @@ def show_alarm_message_dialog(icon, item):
     config.alarm_message = input_dialog.user_input
     config.save_to_file()
 
-    root.destroy()  # Destroy the root window
+    root.destroy()
 
 def certainty_selected(icon, item):
     global config
@@ -164,12 +206,12 @@ menu_items = [ item for item in [
     pystray.MenuItem("Change alarm message", show_alarm_message_dialog),
     pystray.MenuItem("Certainty", certainty_menu),
     pystray.MenuItem("Alarm after", alarm_delay_menu),
+    pystray.MenuItem("Statistics", show_statistics_chart_window),
     pystray.MenuItem("Exit", exit_app)] if item is not None]
 
 icon = pystray.Icon("Neural", image, menu=pystray.Menu(
 *menu_items
 ))
-
 
 posture_analyser_thread.start()
 

@@ -9,7 +9,7 @@ from PIL import Image, ImageTk
 from screeninfo import get_monitors
 import time
 import os 
-from db.db import save_statistics_to_db, get_today_statistics
+from db.db import save_statistics_to_db, get_statistics_by_num_days
 
 class ScreenOverlayRunner:
     def __init__(self, shared_config:SharedConfig, show_overlay_function):
@@ -56,9 +56,12 @@ class ScreenOverlayRunner:
 
         bonk_image_label = tk.Label(image=test)
         bonk_image_label.image = test
-        total_valid_time, total_invalid_time = get_today_statistics()
-        label = tk.Label(overlay, text= "Today you were sitting correctly for: "+str("{:.2f}".format(int(total_valid_time)))+" seconds", font=("Arial", 24), bg="white", fg="black", compound="top")
-        label.place(relx=0.5, rely=0.1, anchor=tk.CENTER) 
+        
+        statistics = get_statistics_by_num_days(1)
+        if len(statistics) > 0:
+            (total_valid_time, total_invalid_time, date) = statistics[0]
+            label = tk.Label(overlay, text= "Today you were sitting correctly for: "+str("{:.2f}".format(int(total_valid_time)))+" minutes", font=("Arial", 24), bg="white", fg="black", compound="top")
+            label.place(relx=0.5, rely=0.1, anchor=tk.CENTER) 
 
         bonk_image_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER) 
         
