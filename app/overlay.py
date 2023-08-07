@@ -39,7 +39,7 @@ class ScreenOverlayRunner:
         monitors = get_monitors()
         overlay = tk.Tk()
         monitor = monitors[self.config.monitor]
-        overlay.geometry(f"{monitor.width}x{monitor.height}+{monitor.x}+0")
+        overlay.geometry(f"{monitor.width}x{monitor.height}+{monitor.x}+{monitor.y}")
 
         overlay.attributes('-alpha', 0.8)#overlay transparency
         hwnd = int(overlay.winfo_id())

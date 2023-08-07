@@ -16,3 +16,4 @@ app.spec
 */training/*.tiff
 */training/*.webp
 */training/*.avif
+venv/*
