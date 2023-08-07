@@ -11,29 +11,30 @@ from menu.cameraMenu import CameraMenu
 from menu.monitorMenu import MonitorMenu
 from menu.alarmDelayMenu import AlarmDelayMenu
 from menu.sensitivityMenu import SensitivityMenu
+from analyserBackgroundWorker import AnalyserBackgroundWorker
 
 image = Image.open(os.path.join(os.path.dirname(
     os.path.abspath(__file__)), 'assets', 'images', 'icon.jpg'))
 
 config = SharedConfig.create_from_file()
 
-posture_analyser_instance = PostureAnalyser(config)
-posture_analyser_thread = threading.Thread(
-    target=posture_analyser_instance.run)
-posture_analyser_thread.daemon = True
+background_worker = AnalyserBackgroundWorker(config)
+background_worker_thread = threading.Thread(
+    target=background_worker.run)
+background_worker_thread.daemon = True
 
 
 def kill_current_app_and_create_new():
     global config
-    global posture_analyser_thread
-    global posture_analyser_instance
+    global background_worker_thread
+    global background_worker
     config.stop = True
     config = SharedConfig.create_from_file()
-    posture_analyser_instance = PostureAnalyser(config)
-    posture_analyser_thread = threading.Thread(
-        target=posture_analyser_instance.run)
-    posture_analyser_thread.daemon = True
-    posture_analyser_thread.start()
+    background_worker = PostureAnalyser(config)
+    background_worker_thread = threading.Thread(
+        target=background_worker.run)
+    background_worker_thread.daemon = True
+    background_worker_thread.start()
 
 
 def exit_app(icon):
@@ -62,5 +63,5 @@ icon = pystray.Icon("Neural", image, menu=pystray.Menu(
     *menu_items
 ))
 
-posture_analyser_thread.start()
+background_worker_thread.start()
 icon.run()
