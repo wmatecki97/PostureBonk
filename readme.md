@@ -14,7 +14,7 @@ Open the command prompt or terminal.
 Navigate to the project directory:
 
 cd PostureBonk
-python -m PyInstaller --onefile --add-data "app/assets;assets" app/app.py
+python -m PyInstaller  --onefile --add-data "app/assets;assets" --add-data "venv/Lib/site-packages/mediapipe/modules;mediapipe/modules" app/app.py
 After the process is complete, you will find the standalone executable in the dist directory.
 
 ## Troubleshooting
