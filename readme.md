@@ -1,12 +1,17 @@
 ## About the project
 When the application is running, it will access your computer's camera and analyze your sitting posture in real-time. If it detects incorrect posture, it will block the screen and display the configured alarm message. To resume normal operation, correct your posture to dismiss the alarm.
 
+![Tray application](https://github.com/wmatecki97/PostureBonk/tree/main/examples/tray_application.png)
+![Correct sitting recognition](https://github.com/wmatecki97/PostureBonk/tree/main/examples/correct.jpg)
+![Invalid sitting recognition](https://github.com/wmatecki97/PostureBonk/tree/main/examples/invalid.jpg)
+![Blocked screen](https://github.com/wmatecki97/PostureBonk/tree/main/examples/blocked_screen.png)
+
 ## Compiling the application
-the requirements for the application are located in requirements.txt
+the requirements for the application are located in requirements.txt file. Ensure you have everything installed.
 To run the app run python app/app.py
 
 ## Training
-###steps taken during the training of a neural network to classify correct and incorrect sitting postures using videos of individuals. The training process involves the conversion of videos into images, pre-processing of images, and training the model for accurate classification.
+### Steps taken during the training of a neural network to classify correct and incorrect sitting postures using videos of individuals. The training process involves the conversion of videos into images, pre-processing of images, and training the model for accurate classification.
 
 ### Step 1: Prepare Training Data
 

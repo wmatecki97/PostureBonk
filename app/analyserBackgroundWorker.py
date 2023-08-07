@@ -62,10 +62,10 @@ class AnalyserBackgroundWorker:
         if show:
             if (self.invalid_position_consecutive_checks_seconds < self.config.alarm_delay):
                 self.invalid_position_consecutive_checks_seconds += self.config.alarm_delay
-                if self.overlay is None:
+                if self.overlay.overlay is None:
                     self.wait_and_update_status(self.config.alarm_delay)
                 else:
-                    self.overlay.after(300, self.updateStatus)
+                    self.overlay.overlay.after(300, self.updateStatus)
                 return
             self.invalid_position_consecutive_checks_seconds = 0
 
@@ -83,7 +83,8 @@ class AnalyserBackgroundWorker:
                 overlay_to_destroy.destroy()
                 self.overlay.overlay = None
         elif self.overlay.overlay is None:
-            self.overlay.overlay = self.overlay.create_overlay()
+            self.overlay.overlay = self.overlay.create_overlay(
+                self.disable_for_15_min, self.disable_for_today, self.updateStatus)
             self.overlay.overlay.mainloop()
         else:
             self.invalid_position_consecutive_checks_seconds = 0
