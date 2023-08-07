@@ -1,6 +1,7 @@
 ## About the project
 When the application is running, it will access your computer's camera and analyze your sitting posture in real-time. If it detects incorrect posture, it will block the screen and display the configured alarm message. To resume normal operation, correct your posture to dismiss the alarm.
 
+**The whole camera image processing happens on user machine and is not sent anywhere else**
 <div>
   <img src="https://github.com/wmatecki97/PostureBonk/blob/main/examples/tray_application.png?raw=true" alt="Tray application" width="300" height="200">
   <div> Windows tray application </div>
