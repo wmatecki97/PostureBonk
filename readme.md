@@ -2,10 +2,38 @@
 When the application is running, it will access your computer's camera and analyze your sitting posture in real-time. If it detects incorrect posture, it will block the screen and display the configured alarm message. To resume normal operation, correct your posture to dismiss the alarm.
 
 ## Compiling the application
+the requirements for the application are located in requirements.txt
 To run the app run python app/app.py
 
 ## Training
-TBD
+###steps taken during the training of a neural network to classify correct and incorrect sitting postures using videos of individuals. The training process involves the conversion of videos into images, pre-processing of images, and training the model for accurate classification.
+
+### Step 1: Prepare Training Data
+
+Gather video samples of individuals sitting correctly and incorrectly.
+go to "training" directory
+Organize the videos by placing correct posture videos in the "trainingVideos/correct" directory and incorrect posture videos in the "trainingVideos/incorrect" directory.
+### Step 2: Video to Image Conversion and Background Removal
+
+Execute the "videoToImages.py" script, which will convert each video into a series of images.
+The script will also perform background removal to isolate the person from the image background, simplifying the training process.
+### Step 3: Image Augmentation for Increased Training Data
+
+To increase the diversity of the training data and improve model generalization, run the "sampleImagesMultiplier.py" script.
+The script will apply random transformations to each input image, such as rotation, scaling, and flipping.
+It is essential to shift the person within the image, ensuring they are not always centered in the frame to prevent the model from relying on spatial biases.
+
+### Step 4: Model Training
+
+Begin training the neural network using the preprocessed and augmented data.
+Execute the "classifier.py" script, which will train the model to classify correct and incorrect sitting postures based on the provided training data.
+The model will learn to distinguish between the two classes and achieve improved accuracy over time.
+Uncomment model = load_model... to continue training already pretrained model for your use case
+
+### Note:
+Classifier is using black and white images as input because it reduces number of neurons almost 3 times (rgb -> brightness only). 
+Additionally the image is not grayscale but only 0/1 to even more simplify the training.
+
 
 ## Generate the Standalone Executable
 To create a standalone executable for the application, follow these steps:
