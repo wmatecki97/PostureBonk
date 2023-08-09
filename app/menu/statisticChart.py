@@ -17,7 +17,6 @@ def plot_statistics_chart():
     ax.plot(dates, valid_times, label='Valid Time')
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%Y'))
     plt.gca().xaxis.set_major_locator(mdates.DayLocator())
-    ax.plot(dates, invalid_times, label='Invalid Time')
     ax.set_xlabel('Days')
     ax.set_ylabel('Total Time (minutes)')
     ax.set_title('Statistics of the Last 30 Days')

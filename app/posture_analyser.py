@@ -52,6 +52,6 @@ class PostureAnalyser:
                   str(predictions[0][1]*100)+'%')
 
             if predictions[0][1] < self.config.certainty:
-                return False
+                return (False, preprocessed_frame)
             else:
-                return True
+                return (True, preprocessed_frame)

@@ -56,14 +56,15 @@ class AnalyserBackgroundWorker:
         if self.config.stop:
             return
 
-        show = self.show_overlay_function()
+        (show, frame) = self.show_overlay_function()
         self.updateTimeStatistics(not show)
 
         if show:
+            self.overlay.frame = frame
             if (self.invalid_position_consecutive_checks_seconds < self.config.alarm_delay):
-                self.invalid_position_consecutive_checks_seconds += self.config.alarm_delay
+                self.invalid_position_consecutive_checks_seconds += self.config.alarm_delay/2
                 if self.overlay.overlay is None:
-                    self.wait_and_update_status(self.config.alarm_delay)
+                    self.wait_and_update_status(self.config.alarm_delay/2)
                 else:
                     self.overlay.overlay.after(300, self.updateStatus)
                 return
@@ -78,7 +79,7 @@ class AnalyserBackgroundWorker:
                 self.overlay.overlay = None
         elif not show:
             overlay_to_destroy = self.overlay.overlay
-            self.wait_and_update_status(self.config.alarm_delay)
+            self.wait_and_update_status(self.config.alarm_delay/2)
             if overlay_to_destroy is not None:
                 overlay_to_destroy.destroy()
                 self.overlay.overlay = None
