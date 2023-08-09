@@ -5,13 +5,13 @@ from PIL import Image
 from posture_analyser import PostureAnalyser
 import threading
 import os
-from menu.statisticChart import show_statistics_chart_window
-from menu.alarmMessageDialog import AlarmMessageDialog
-from menu.cameraMenu import CameraMenu
-from menu.monitorMenu import MonitorMenu
-from menu.alarmDelayMenu import AlarmDelayMenu
-from menu.sensitivityMenu import SensitivityMenu
-from analyserBackgroundWorker import AnalyserBackgroundWorker
+from menu.statistic_chart import show_statistics_chart_window
+from menu.alarm_message_dialog import AlarmMessageDialog
+from menu.camera_menu import CameraMenu
+from menu.monitor_menu import MonitorMenu
+from menu.alarm_delay_menu import AlarmDelayMenu
+from menu.sensitivity_menu import SensitivityMenu
+from analyser_background_worker import AnalyserBackgroundWorker
 
 image = Image.open(os.path.join(os.path.dirname(
     os.path.abspath(__file__)), 'assets', 'images', 'icon.jpg'))

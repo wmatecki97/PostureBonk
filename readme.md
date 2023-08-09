@@ -39,11 +39,11 @@ go to "training" directory
 Organize the videos by placing correct posture videos in the "trainingVideos/correct" directory and incorrect posture videos in the "trainingVideos/incorrect" directory.
 ### Step 2: Video to Image Conversion and Background Removal
 
-Execute the "videoToImages.py" script, which will convert each video into a series of images.
+Execute the "video_to_images.py" script, which will convert each video into a series of images.
 The script will also perform background removal to isolate the person from the image background, simplifying the training process.
 ### Step 3: Image Augmentation for Increased Training Data
 
-To increase the diversity of the training data and improve model generalization, run the "sampleImagesMultiplier.py" script.
+To increase the diversity of the training data and improve model generalization, run the "sample_images_multiplier.py" script.
 The script will apply random transformations to each input image, such as rotation, scaling, and flipping.
 It is essential to shift the person within the image, ensuring they are not always centered in the frame to prevent the model from relying on spatial biases.
 
@@ -66,7 +66,7 @@ Open the command prompt or terminal.
 Navigate to the project directory:
 
 cd PostureBonk
-python -m PyInstaller  --onefile --add-data "app/assets;assets" --add-data "venv/Lib/site-packages/mediapipe/modules;mediapipe/modules" app/app.py
+python -m PyInstaller --onefile --add-data "app/assets;assets" --add-data "venv/Lib/site-packages/mediapipe/modules;mediapipe/modules" --name "Posture bonk" app/posture_bonk.py
 After the process is complete, you will find the standalone executable in the dist directory.
 
 ## Troubleshooting

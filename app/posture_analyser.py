@@ -42,8 +42,6 @@ class PostureAnalyser:
         return modified_img
 
     def calculate_if_show_overlay(self, dispose_camera=True):
-        print(dispose_camera)
-
         frame = self.get_live_frame(dispose_camera)
 
         if frame is not None:
