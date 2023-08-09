@@ -13,11 +13,16 @@ class PostureAnalyser:
         self.config = shared_config
         self.model = load_model(os.path.join(os.path.dirname(
             os.path.abspath(__file__)), 'assets', 'image_classifier_model.h5'))
+        self.cap = None
 
-    def get_live_frame(self):
-        cap = cv2.VideoCapture(self.config.camera, cv2.CAP_DSHOW)
-        ret, frame = cap.read()
-        cap.release()
+    def get_live_frame(self, dispose_camera):
+        if self.cap is None:
+            self.cap = cv2.VideoCapture(self.config.camera, cv2.CAP_DSHOW)
+
+        ret, frame = self.cap.read()
+        if dispose_camera:
+            self.cap.release()
+            self.cap = None
 
         if ret:
             return frame
@@ -36,8 +41,10 @@ class PostureAnalyser:
 
         return modified_img
 
-    def calculate_if_show_overlay(self):
-        frame = self.get_live_frame()
+    def calculate_if_show_overlay(self, dispose_camera=True):
+        print(dispose_camera)
+
+        frame = self.get_live_frame(dispose_camera)
 
         if frame is not None:
             preprocessed_frame = self.preprocess_frame(frame)

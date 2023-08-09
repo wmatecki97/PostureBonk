@@ -5,6 +5,7 @@ from shared_config import SharedConfig
 import time
 from db.db import save_statistics_to_db
 from overlay import Overlay
+import math
 
 
 class AnalyserBackgroundWorker:
@@ -56,13 +57,15 @@ class AnalyserBackgroundWorker:
         if self.config.stop:
             return
 
-        (show, frame) = self.show_overlay_function()
+        (show, frame) = self.show_overlay_function(self.overlay.overlay is None)
+
         self.updateTimeStatistics(not show)
 
         if show:
             self.overlay.frame = frame
             if (self.invalid_position_consecutive_checks_seconds < self.config.alarm_delay):
-                self.invalid_position_consecutive_checks_seconds += self.config.alarm_delay/2
+                self.invalid_position_consecutive_checks_seconds += math.ceil(
+                    self.config.alarm_delay/2.0)
                 if self.overlay.overlay is None:
                     self.wait_and_update_status(self.config.alarm_delay/2)
                 else:
@@ -89,7 +92,7 @@ class AnalyserBackgroundWorker:
             self.overlay.overlay.mainloop()
         else:
             self.invalid_position_consecutive_checks_seconds = 0
-            self.overlay.overlay.after(300, self.updateStatus)
+            self.updateStatus()
 
     def run(self):
         self.updateStatus()

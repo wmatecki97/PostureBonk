@@ -30,7 +30,7 @@ def kill_current_app_and_create_new():
     global background_worker
     config.stop = True
     config = SharedConfig.create_from_file()
-    background_worker = PostureAnalyser(config)
+    background_worker = AnalyserBackgroundWorker(config)
     background_worker_thread = threading.Thread(
         target=background_worker.run)
     background_worker_thread.daemon = True
