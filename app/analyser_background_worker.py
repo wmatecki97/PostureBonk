@@ -87,7 +87,7 @@ class AnalyserBackgroundWorker:
                     self.overlay.overlay = None
             elif self.overlay.overlay is None:
                 self.overlay.overlay = self.overlay.create_overlay(
-                    self.disable_for_15_min, self.disable_for_today, self.main_loop)
+                    self.disable_for_15_min, self.disable_for_today)
                 self.overlay.overlay.mainloop()
             else:
                 self.invalid_position_consecutive_checks_seconds = 0

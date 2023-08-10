@@ -39,6 +39,7 @@ def kill_current_app_and_create_new():
 
 def exit_app(icon):
     config.stop = True
+    background_worker_thread.join()
     icon.stop()
 
 

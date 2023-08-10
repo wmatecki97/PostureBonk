@@ -8,6 +8,7 @@ from screeninfo import get_monitors
 import os
 from db.db import get_statistics_by_num_days
 import numpy as np
+import random
 
 
 class Overlay:
@@ -15,10 +16,29 @@ class Overlay:
         self.config = shared_config
         self.overlay: tk.Tk = None
         self.frame = None
+        self.overlay_id = None
 
-    def create_overlay(self, disable_for_15_min, disable_for_today, updateStatus):
+    def update_frame_label(self, user_image, overlay, initiating_overlay_id):
+        if initiating_overlay_id != self.overlay_id:
+            return
+        frame_image = self.get_frame_image()
+        user_image.config(image=frame_image)
+        user_image.image = frame_image
+        overlay.after(100, self.update_frame_label,
+                      user_image, overlay, initiating_overlay_id)
+
+    def get_frame_image(self):
+        modified_img = np.where(self.frame < 1, 0, 255)
+
+        pil_image = Image.fromarray(modified_img.astype(np.uint8))
+
+        frame_image = ImageTk.PhotoImage(pil_image)
+        return frame_image
+
+    def create_overlay(self, disable_for_15_min, disable_for_today):
+        self.overlay_id = random.random()
         monitors = get_monitors()
-        overlay = tk.Tk()
+        self.overlay = overlay = tk.Tk()
         monitor = monitors[self.config.monitor]
         overlay.geometry(
             f"{monitor.width}x{monitor.height}+{monitor.x}+{monitor.y}")
@@ -43,9 +63,9 @@ class Overlay:
         frame_image_label.image = bonk_image
 
         frame_img = self.get_frame_image()
-        __frame_label = tk.Label(image=frame_img)
-        __frame_label.image = frame_img
-        self.update_frame_label(__frame_label, overlay)
+        user_image = tk.Label(image=frame_img)
+        user_image.image = frame_img
+        self.update_frame_label(user_image, overlay, self.overlay_id)
 
         statistics = get_statistics_by_num_days(1)
         if len(statistics) > 0:
@@ -55,7 +75,7 @@ class Overlay:
             label.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
         frame_image_label.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-        __frame_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+        user_image.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
         label = tk.Label(overlay, text=self.config.alarm_message, font=(
             "Arial", 24), bg="white", fg="black", compound="top")
@@ -68,20 +88,5 @@ class Overlay:
         btn_today = tk.Button(overlay, text="Disable for today", command=disable_for_today, font=(
             "Arial", 24),  fg="green", bg="black")
         btn_today.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
-        overlay.after(300, updateStatus)
 
         return overlay
-
-    def update_frame_label(self, __frame_label, overlay):
-        frame_image = self.get_frame_image()
-        __frame_label.config(image=frame_image)
-        __frame_label.image = frame_image
-        overlay.after(100, self.update_frame_label, __frame_label, overlay)
-
-    def get_frame_image(self):
-        modified_img = np.where(self.frame < 1, 0, 255)
-
-        pil_image = Image.fromarray(modified_img.astype(np.uint8))
-
-        frame_image = ImageTk.PhotoImage(pil_image)
-        return frame_image
