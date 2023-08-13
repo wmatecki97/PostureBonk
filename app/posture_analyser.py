@@ -47,6 +47,9 @@ class PostureAnalyser:
         if frame is not None:
             preprocessed_frame = self.preprocess_frame(frame)
 
+            if not np.any(preprocessed_frame == 1):  # no person detected
+                return (False, preprocessed_frame)
+
             batch = np.expand_dims(preprocessed_frame, axis=0)
 
             predictions = self.model.predict(batch)

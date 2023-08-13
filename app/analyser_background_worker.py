@@ -48,7 +48,7 @@ class AnalyserBackgroundWorker:
                 self.invalid_time = 0
         self.timer = time.time_ns()
 
-    def main_loop(self):
+    def main_loop(self, update_user_frame_delegate=None):
         delay = 0
         while True:
             if self.config.stop:
@@ -63,6 +63,8 @@ class AnalyserBackgroundWorker:
 
             if show:
                 self.overlay.frame = frame
+                if update_user_frame_delegate is not None:
+                    update_user_frame_delegate()
                 if (self.invalid_position_consecutive_checks_seconds < self.config.alarm_delay):
                     self.invalid_position_consecutive_checks_seconds += math.ceil(
                         self.config.alarm_delay/2.0)
@@ -87,7 +89,7 @@ class AnalyserBackgroundWorker:
                     self.overlay.overlay = None
             elif self.overlay.overlay is None:
                 self.overlay.overlay = self.overlay.create_overlay(
-                    self.disable_for_15_min, self.disable_for_today)
+                    self.disable_for_15_min, self.disable_for_today, self.main_loop)
                 self.overlay.overlay.mainloop()
             else:
                 self.invalid_position_consecutive_checks_seconds = 0

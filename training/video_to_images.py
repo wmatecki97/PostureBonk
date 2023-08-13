@@ -76,20 +76,33 @@ def equalize_number_of_samples_for_classes(class_0_output_folder, class_1_output
 
 
 if __name__ == "__main__":
-
+    for file in os.listdir('F:/Programming/Posture/training/backgrounds/backgrounds'):
+        print(file)
+        frame = cv2.imread(os.path.join(
+            'F:/Programming/Posture/training/backgrounds/backgrounds', file))
+        frame = cv2.resize(frame, (160, 90))
+        vid_rmbg = seg.removeBG(frame, threshold=0.6)
+        cv2.imwrite('F:/Programming/Posture/training/backgrounds/test/' +
+                    str(random.random())+'.jpg', vid_rmbg)
+    exit()
     correct_video_folder = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), "trainingVideos", "correct")
     print(correct_video_folder)
     invalid_video_folder = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), "trainingVideos", "invalid")
+    invalid_video_folder = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), "trainingVideos", "background")
 
     class_0_output_folder = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), "trainingData", "raw", "class_0")
     class_1_output_folder = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), "trainingData", "raw", "class_1")
+    class_2_output_folder = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), "trainingData", "raw", "class_2")
 
     remove_files_with_copy(class_0_output_folder)
     remove_files_with_copy(class_1_output_folder)
+    remove_files_with_copy(class_2_output_folder)
 
     correct_files = os.listdir(correct_video_folder)
     invalid_files = os.listdir(invalid_video_folder)

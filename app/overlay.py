@@ -18,24 +18,19 @@ class Overlay:
         self.frame = None
         self.overlay_id = None
 
-    def update_frame_label(self, user_image, overlay, initiating_overlay_id):
-        if initiating_overlay_id != self.overlay_id:
-            return
+    def update_frame_label(self, user_image):
         frame_image = self.get_frame_image()
         user_image.config(image=frame_image)
         user_image.image = frame_image
-        overlay.after(100, self.update_frame_label,
-                      user_image, overlay, initiating_overlay_id)
+        self.overlay.update()
 
     def get_frame_image(self):
         modified_img = np.where(self.frame < 1, 0, 255)
-
         pil_image = Image.fromarray(modified_img.astype(np.uint8))
-
         frame_image = ImageTk.PhotoImage(pil_image)
         return frame_image
 
-    def create_overlay(self, disable_for_15_min, disable_for_today):
+    def create_overlay(self, disable_for_15_min, disable_for_today, main_loop):
         self.overlay_id = random.random()
         monitors = get_monitors()
         self.overlay = overlay = tk.Tk()
@@ -63,9 +58,14 @@ class Overlay:
         frame_image_label.image = bonk_image
 
         frame_img = self.get_frame_image()
-        user_image = tk.Label(image=frame_img)
+        user_image = tk.Label(overlay, image=frame_img)
         user_image.image = frame_img
-        self.update_frame_label(user_image, overlay, self.overlay_id)
+
+        def update_user_frame():
+            if self.overlay is not None:
+                self.update_frame_label(user_image)
+
+        update_user_frame()
 
         statistics = get_statistics_by_num_days(1)
         if len(statistics) > 0:
@@ -88,5 +88,5 @@ class Overlay:
         btn_today = tk.Button(overlay, text="Disable for today", command=disable_for_today, font=(
             "Arial", 24),  fg="green", bg="black")
         btn_today.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
-
+        overlay.after(300, main_loop, update_user_frame)
         return overlay
