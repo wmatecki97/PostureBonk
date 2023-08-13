@@ -87,6 +87,8 @@ class AnalyserBackgroundWorker:
                 if overlay_to_destroy is not None:
                     overlay_to_destroy.destroy()
                     self.overlay.overlay = None
+                if update_user_frame_delegate is not None:
+                    return
             elif self.overlay.overlay is None:
                 self.overlay.overlay = self.overlay.create_overlay(
                     self.disable_for_15_min, self.disable_for_today, self.main_loop)
