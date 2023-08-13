@@ -1,5 +1,6 @@
 import json
 
+
 class SharedConfig:
     def __init__(self, certainty=0.8, alarm_message="Straighten up!"):
         self.certainty = certainty
@@ -16,6 +17,7 @@ class SharedConfig:
             with open(instance.file_path, "r") as file:
                 data = json.load(file)
                 instance.__dict__.update(data)
+                instance.stop = False
         except Exception as e:
             print(f"Error loading the configuration file: {e}")
             instance.save_to_file()

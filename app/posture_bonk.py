@@ -1,5 +1,6 @@
 from PIL import Image
 import pystray
+from menu.sensitivity_settings import SensitivitySettings
 from shared_config import SharedConfig
 from PIL import Image
 from posture_analyser import PostureAnalyser
@@ -25,11 +26,11 @@ background_worker_thread.daemon = True
 
 
 def kill_current_app_and_create_new():
-    global config
-    global background_worker_thread
-    global background_worker
-    config.stop = True
-    config = SharedConfig.create_from_file()
+    kill_current_worker()
+    start_new_worker()
+
+
+def start_new_worker():
     background_worker = AnalyserBackgroundWorker(config)
     background_worker_thread = threading.Thread(
         target=background_worker.run)
@@ -37,16 +38,33 @@ def kill_current_app_and_create_new():
     background_worker_thread.start()
 
 
+def kill_current_worker():
+    global config
+    global background_worker_thread
+    global background_worker
+    config.stop = True
+    config = SharedConfig.create_from_file()
+
+
 def exit_app(icon):
+    global config
+    global background_worker_thread
+    PostureAnalyser.release()
+    
     config.stop = True
     background_worker_thread.join()
     icon.stop()
 
 
+def change_sensitivity_settings():
+    kill_current_worker()
+    sensitivity_menu = SensitivitySettings(config, start_new_worker)
+    sensitivity_menu.show()
+
+
 camera_menu = CameraMenu(config)
 monitor_menu = MonitorMenu(config)
 alarm_delay_menu = AlarmDelayMenu(config, kill_current_app_and_create_new)
-sensitivity_menu = SensitivityMenu(config)
 alarm_dialog = AlarmMessageDialog(config)
 
 menu_items = [item for item in [
@@ -55,7 +73,7 @@ menu_items = [item for item in [
     pystray.MenuItem("Resume", kill_current_app_and_create_new),
     pystray.MenuItem("Change alarm message",
                      alarm_dialog.show_alarm_message_dialog),
-    pystray.MenuItem("Sensitivity", sensitivity_menu.menu),
+    pystray.MenuItem("Sensitivity", change_sensitivity_settings),
     pystray.MenuItem("Alarm after", alarm_delay_menu.menu),
     pystray.MenuItem("Statistics", show_statistics_chart_window),
     pystray.MenuItem("Exit", exit_app)] if item is not None]

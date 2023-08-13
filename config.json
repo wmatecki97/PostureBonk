@@ -1,5 +1,5 @@
 {
-    "certainty": 0.5,
+    "certainty": 0.22,
     "alarm_delay": 1,
     "alarm_message": "Straighten up!",
     "file_path": "config.json",

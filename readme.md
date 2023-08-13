@@ -27,7 +27,7 @@ When the application is running, it will access your computer's camera and analy
 
 ## Compiling the application
 the requirements for the application are located in requirements.txt file. Ensure you have everything installed.
-To run the app run python app/app.py
+To run the app run python app/posture_bonk.py
 
 ## Training
 ### Steps taken during the training of a neural network to classify correct and incorrect sitting postures using videos of individuals. The training process involves the conversion of videos into images, pre-processing of images, and training the model for accurate classification.

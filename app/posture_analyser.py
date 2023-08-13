@@ -6,6 +6,7 @@ import os
 from cvzone.SelfiSegmentationModule import SelfiSegmentation
 
 seg = SelfiSegmentation()
+cap = None
 
 
 class PostureAnalyser:
@@ -13,16 +14,16 @@ class PostureAnalyser:
         self.config = shared_config
         self.model = load_model(os.path.join(os.path.dirname(
             os.path.abspath(__file__)), 'assets', 'image_classifier_model.h5'))
-        self.cap = None
 
     def get_live_frame(self, dispose_camera):
-        if self.cap is None:
-            self.cap = cv2.VideoCapture(self.config.camera, cv2.CAP_DSHOW)
+        global cap
+        if cap is None:
+            cap = cv2.VideoCapture(self.config.camera, cv2.CAP_DSHOW)
 
-        ret, frame = self.cap.read()
+        ret, frame = cap.read()
         if dispose_camera:
-            self.cap.release()
-            self.cap = None
+            cap.release()
+            cap = None
 
         if ret:
             return frame
@@ -56,10 +57,17 @@ class PostureAnalyser:
 
             print('probability of sitting correctly ' +
                   str(predictions[0][0]*100)+'%')
+            chances_sitting_wrong = predictions[0][1]*100
             print('probability of sitting wrong ' +
-                  str(predictions[0][1]*100)+'%')
+                  str(chances_sitting_wrong)+'%')
 
             if predictions[0][1] < self.config.certainty:
-                return (False, preprocessed_frame)
+                return (False, preprocessed_frame, chances_sitting_wrong)
             else:
-                return (True, preprocessed_frame)
+                return (True, preprocessed_frame, chances_sitting_wrong)
+
+        return (False, None, 0)
+    
+    def release():
+        if cap is not None:
+            cap.release()

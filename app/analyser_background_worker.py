@@ -56,8 +56,11 @@ class AnalyserBackgroundWorker:
             else:
                 time.sleep(delay)
 
-            (show, frame) = self.show_overlay_function(
+            (show, frame, _) = self.show_overlay_function(
                 self.overlay.overlay is None)
+
+            if frame is None:  # camera is being used by other process
+                continue
 
             self.update_time_statistics(not show)
 
@@ -71,7 +74,7 @@ class AnalyserBackgroundWorker:
                     if self.overlay.overlay is None:
                         delay = self.config.alarm_delay/2
                     else:
-                        delay = 0.3
+                        delay = 0.03
                 self.invalid_position_consecutive_checks_seconds = 0
 
             if self.disabledTimer > 0:
@@ -97,4 +100,5 @@ class AnalyserBackgroundWorker:
                 self.invalid_position_consecutive_checks_seconds = 0
 
     def run(self):
+
         self.main_loop()
