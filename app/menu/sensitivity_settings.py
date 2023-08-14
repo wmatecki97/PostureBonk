@@ -106,6 +106,11 @@ class SensitivitySettings:
 
         btn_auto_adjust.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
 
+        start_button = tk.Button(
+            root, text="Start", command=self.on_closing, fg="green")
+
+        start_button.place(relx=0.8, rely=0.9, anchor=tk.CENTER)
+
         root.after(300, self.update_frame_label, user_image, root)
         root.mainloop()
 

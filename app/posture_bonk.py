@@ -11,7 +11,6 @@ from menu.alarm_message_dialog import AlarmMessageDialog
 from menu.camera_menu import CameraMenu
 from menu.monitor_menu import MonitorMenu
 from menu.alarm_delay_menu import AlarmDelayMenu
-from menu.sensitivity_menu import SensitivityMenu
 from analyser_background_worker import AnalyserBackgroundWorker
 
 image = Image.open(os.path.join(os.path.dirname(
@@ -19,11 +18,7 @@ image = Image.open(os.path.join(os.path.dirname(
 
 config = SharedConfig.create_from_file()
 
-background_worker = AnalyserBackgroundWorker(config)
-background_worker_thread = threading.Thread(
-    target=background_worker.run)
-background_worker_thread.daemon = True
-
+background_worker_thread = None
 
 def kill_current_app_and_create_new():
     kill_current_worker()
@@ -31,6 +26,7 @@ def kill_current_app_and_create_new():
 
 
 def start_new_worker():
+    global background_worker_thread
     background_worker = AnalyserBackgroundWorker(config)
     background_worker_thread = threading.Thread(
         target=background_worker.run)
@@ -40,8 +36,6 @@ def start_new_worker():
 
 def kill_current_worker():
     global config
-    global background_worker_thread
-    global background_worker
     config.stop = True
     config = SharedConfig.create_from_file()
 
@@ -82,5 +76,5 @@ icon = pystray.Icon("Neural", image, menu=pystray.Menu(
     *menu_items
 ))
 
-background_worker_thread.start()
+change_sensitivity_settings()
 icon.run()

@@ -73,8 +73,10 @@ class AnalyserBackgroundWorker:
                         self.config.alarm_delay/2.0)
                     if self.overlay.overlay is None:
                         delay = self.config.alarm_delay/2
+                        continue
                     else:
                         delay = 0.03
+            else:
                 self.invalid_position_consecutive_checks_seconds = 0
 
             if self.disabledTimer > 0:
